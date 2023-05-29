@@ -1,2 +1,2 @@
-# Rflow
-A wireframe project made with React!
+# R-Wireframe
+A wireframe project made with React.
