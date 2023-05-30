@@ -1,32 +1,73 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import ReactFlow, {
+  ReactFlowProvider,
   MiniMap,
   Controls,
   Background,
   useNodesState,
   useEdgesState,
   addEdge,
+  SelectionMode,
+  useKeyPress
 } from 'reactflow';
 
+import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
 import 'reactflow/dist/style.css';
-// import './App.css'
 
-const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
-];
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+let id = 1;
+const getId = () => `${id++}`;
 
 function App() {
+  const reactFlowWrapper = useRef(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+
+  const handlePaneClick = (e) => {
+    e.preventDefault();
+
+    const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
+
+    const position = reactFlowInstance.project({
+      x: e.clientX - (flowBounds.left),
+      y: e.clientY - (flowBounds.top),
+    });
+
+    const newNode = {
+      id: getId(),
+      position,
+      data: { label: `Node ${id}` },
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+  }
+
   return (
     <>
-      <div><h1>R-WireFrame</h1></div>
-      <div style={{ border: '2px solid black', width: '50vw', height: '50vh' }}>
-        <ReactFlow nodes={initialNodes} edges={initialEdges}>
-          <Background variant="dots" gap={20} size={2} />
-        </ReactFlow>
-        <div><p>Created by Josue U. and Miguelcloid R.</p></div>
-      </div>
+      <div><h1>Creo</h1></div>
+      <ReactFlowProvider>
+        <div 
+          className='reactflow-wrapper'
+          style={{ border: '2px solid black', width: '80vw', height: '50vh' }}
+          ref={reactFlowWrapper}
+          >
+          <ReactFlow 
+            nodes={nodes} 
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onInit={setReactFlowInstance}
+            selectionMode={SelectionMode.Partial}
+            onPaneClick={handlePaneClick}
+            fitView
+            >
+            <Controls />
+            <Background color="#aaa" variant="lines" gap={20} size={2} />
+          </ReactFlow>
+          <div><p>Created by Josue U. and Miguelcloid R.</p></div>
+          <div><p>Hire us please.</p></div>
+        </div>
+      </ReactFlowProvider>
     </>
   )
 }
