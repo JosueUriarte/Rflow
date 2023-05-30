@@ -6,3 +6,7 @@ export const nodes = [
       position: { x: 0, y: 150 },
     },
   ];
+
+export const edges = [
+];
+  

@@ -10,6 +10,7 @@ import ReactFlow, {
   SelectionMode,
   useKeyPress
 } from 'reactflow';
+import ToolBox from './components/ToolBox';
 
 import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
 import 'reactflow/dist/style.css';
@@ -23,6 +24,9 @@ function App() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
+  const [toolBoxX, setToolBoxX] = useState(0);
+  const [toolBoxY, setToolBoxY] = useState(0);
+
   const handlePaneClick = (e) => {
     e.preventDefault();
 
@@ -32,6 +36,9 @@ function App() {
       x: e.clientX - (flowBounds.left),
       y: e.clientY - (flowBounds.top),
     });
+
+    setToolBoxX(position.left);
+    setToolBoxY(position.top);
 
     const newNode = {
       id: getId(),
@@ -51,6 +58,7 @@ function App() {
           style={{ border: '2px solid black', width: '80vw', height: '50vh' }}
           ref={reactFlowWrapper}
           >
+          
           <ReactFlow 
             nodes={nodes} 
             edges={edges}
@@ -61,9 +69,11 @@ function App() {
             onPaneClick={handlePaneClick}
             fitView
             >
-            <Controls />
-            <Background color="#aaa" variant="lines" gap={20} size={2} />
+              <ToolBox/>
+              <Controls />
+              <Background color="#aaa" variant="lines" gap={20} size={2} />
           </ReactFlow>
+          
           <div><p>Created by Josue U. and Miguelcloid R.</p></div>
           <div><p>Hire us please.</p></div>
         </div>
