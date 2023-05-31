@@ -49,7 +49,10 @@ function App() {
     };
 
     setNodes((nds) => nds.concat(newNode));
+
   }
+
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
   return (
     <>
@@ -58,10 +61,8 @@ function App() {
       </div>
       <ReactFlowProvider>
         <div 
-          className='
-          h-80 content-center 
-          border-double border-4 border-black'
-          // style={{ border: '2px solid black', width: '80vw', height: '50vh' }}
+          className='border-double border-4 border-black mx-9'
+          style={{height: '80vh'}}
           ref={reactFlowWrapper}
           >
           
@@ -73,6 +74,7 @@ function App() {
             onInit={setReactFlowInstance}
             selectionMode={SelectionMode.Partial}
             onPaneClick={handlePaneClick}
+            onConnect={onConnect}
             fitView
             >
               <ToolBox/>
