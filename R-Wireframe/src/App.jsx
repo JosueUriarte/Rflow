@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import ReactFlow, {
   ReactFlowProvider,
   MiniMap,
@@ -8,38 +8,49 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   SelectionMode,
+  applyNodeChanges,
+  applyEdgeChanges,
   useKeyPress
-} from 'reactflow';
+} from "reactflow";
+import ToolBox from "./components/ToolBox";
+import {
+  nodes as initialNodes,
+  edges as initialEdges,
+} from "./initial-elements";
 
-import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
-
-import ToolBox from './components/ToolBox';
-const nodeTypes = {
-};
-
-
-import 'reactflow/dist/style.css';
-import './main.css'
-
+import "reactflow/dist/style.css";
+import "./main.css";
+import TextObject from './components/CustomNodes/TextObject';
+import TextNode from './components/CustomNodes/TextNode';
+import './components/CustomNodes/CustomNodes.css';
 
 let id = 1;
 const getId = () => `${id++}`;
+const nodeTypes = { textObject: TextObject, textNode: TextNode};
 
 function App() {
   const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const connectingNodeId = useRef(null);
+  const [nodes, setNodes] = useNodesState(initialNodes);
+  const [edges, setEdges] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [currNodeType, setCurrNodeType] = useState('input');
 
-  const handlePaneClick = (e) => {
-    e.preventDefault();
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
+  );
+  
+ const handlePaneClick = (e) => {
+    //e.preventDefault();
+
+    console.log(e);
 
     const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
     const position = reactFlowInstance.project({
-      x: e.clientX - (flowBounds.left),
-      y: e.clientY - (flowBounds.top),
+      x: e.clientX - flowBounds.left,
+      y: e.clientY - flowBounds.top,
     });
 
     const newNode = {
@@ -50,10 +61,51 @@ function App() {
     };
 
     setNodes((nds) => nds.concat(newNode));
+  };
+  
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
 
-  }
+  const onConnectStart = useCallback((_, { nodeId }) => {
+    connectingNodeId.current = nodeId;
+  }, []);
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnectEnd = useCallback(
+    (e) => {
+      const targetIsPane = e.target.classList.contains('react-flow__pane');
+
+      if (targetIsPane) {
+        // we need to remove the wrapper bounds, in order to get the correct position
+        const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
+
+        //const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
+        const position = reactFlowInstance.project({
+          x: e.clientX - flowBounds.left,
+          y: e.clientY - flowBounds.top,
+        });
+        const id = getId();
+
+        const newNode = {
+          id,
+          position,
+          data: { label: `Node ${id}` },
+        };
+
+        setToolBoxX(position.left);
+        setToolBoxY(position.top);
+      
+        setNodes((nds) => nds.concat(newNode));
+        setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id }));
+      }
+    }
+  );
+
+  const onEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
 
   return (
     <>
@@ -79,6 +131,8 @@ function App() {
               selectionMode={SelectionMode.Partial}
               onPaneClick={handlePaneClick}
               onConnect={onConnect}
+              onConnectStart={onConnectStart}
+              onConnectEnd={onConnectEnd}
               fitView
               >
                 <Controls position={'bottom-right'}/>
@@ -95,7 +149,7 @@ function App() {
         <p>Hire us please.</p>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
