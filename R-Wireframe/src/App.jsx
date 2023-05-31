@@ -10,8 +10,13 @@ import ReactFlow, {
   SelectionMode,
   useKeyPress
 } from 'reactflow';
-import ToolBox from './components/ToolBox';
+
 import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
+
+import ToolBox from './components/ToolBox';
+const nodeTypes = {
+};
+
 
 import 'reactflow/dist/style.css';
 import './main.css'
@@ -25,9 +30,7 @@ function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-
-  const [toolBoxX, setToolBoxX] = useState(0);
-  const [toolBoxY, setToolBoxY] = useState(0);
+  const [currNodeType, setCurrNodeType] = useState('input');
 
   const handlePaneClick = (e) => {
     e.preventDefault();
@@ -39,10 +42,8 @@ function App() {
       y: e.clientY - (flowBounds.top),
     });
 
-    setToolBoxX(position.left);
-    setToolBoxY(position.top);
-
     const newNode = {
+      type: currNodeType,
       id: getId(),
       position,
       data: { label: `Node ${id}` },
@@ -56,39 +57,43 @@ function App() {
 
   return (
     <>
-      <div className='text-3xl lowercase text-center'>
-        <h1>Creo</h1>
-      </div>
-      <ReactFlowProvider>
-        <div 
-          className='border-double border-4 border-black mx-9'
-          style={{height: '80vh'}}
-          ref={reactFlowWrapper}
-          >
+      <h1 className='text-3xl text-center uppercase'>Creo</h1>
+
+      <div className='text-xs text-left flex mx-0'>
+        <ReactFlowProvider className="">
           
-          <ReactFlow 
-            nodes={nodes} 
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onInit={setReactFlowInstance}
-            selectionMode={SelectionMode.Partial}
-            onPaneClick={handlePaneClick}
-            onConnect={onConnect}
-            fitView
+          <ToolBox setCurrNodeType={setCurrNodeType} />
+          <div 
+            className='border-4 border-stone-500'
+            style={{height: '70vh', width: '200vh'}}
+            ref={reactFlowWrapper}
             >
-              <ToolBox/>
-              <Controls />
-              <Background color="#E5E4E2" variant="lines" gap={20} size={2} />
-              <Background color="#aaa" variant="dots" gap={30} size={2} />
-          </ReactFlow>
-          <div>
-            {/* <p>{nodes}</p> */}
+            
+            <ReactFlow 
+              nodes={nodes} 
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onInit={setReactFlowInstance}
+              nodeTypes={nodeTypes}
+              selectionMode={SelectionMode.Partial}
+              onPaneClick={handlePaneClick}
+              onConnect={onConnect}
+              fitView
+              >
+                <Controls position={'bottom-right'}/>
+                <Background  color="#aaa" variant="dots" gap={20} size={2}/>
+            </ReactFlow>
+            <div>
+            </div>
           </div>
-          <div><p>Created by Josue U. and Miguelcloid R.</p></div>
-          <div><p>Hire us please.</p></div>
-        </div>
-      </ReactFlowProvider>
+        </ReactFlowProvider>
+      </div>
+      
+      <div>
+        <p>Created by Josue U. and Miguelcloid R.</p>
+        <p>Hire us please.</p>
+      </div>
     </>
   )
 }
