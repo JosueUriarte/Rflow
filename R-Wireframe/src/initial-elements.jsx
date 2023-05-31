@@ -1,9 +1,15 @@
 export const nodes = [
     {
       id: '0',
-      type: 'input',
-      data: { label: "Let's get it started in here" },
-      position: { x: 0, y: 150 },
+      type: 'textObject',
+      data: { value: "123" },
+      position: { x: 0, y: 0 },
+    },
+    {
+      id: '1',
+      type: 'textNode',
+      data: { value: "123" },
+      position: { x: 0, y: 50 },
     },
   ];
 
