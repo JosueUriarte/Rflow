@@ -11,9 +11,11 @@ import ReactFlow, {
   useKeyPress
 } from 'reactflow';
 import ToolBox from './components/ToolBox';
-
 import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
+
 import 'reactflow/dist/style.css';
+import './main.css'
+
 
 let id = 1;
 const getId = () => `${id++}`;
@@ -51,11 +53,15 @@ function App() {
 
   return (
     <>
-      <div><h1>Creo</h1></div>
+      <div className='text-3xl lowercase text-center'>
+        <h1>Creo</h1>
+      </div>
       <ReactFlowProvider>
         <div 
-          className='reactflow-wrapper'
-          style={{ border: '2px solid black', width: '80vw', height: '50vh' }}
+          className='
+          h-80 content-center 
+          border-double border-4 border-black'
+          // style={{ border: '2px solid black', width: '80vw', height: '50vh' }}
           ref={reactFlowWrapper}
           >
           
@@ -71,9 +77,12 @@ function App() {
             >
               <ToolBox/>
               <Controls />
-              <Background color="#aaa" variant="lines" gap={20} size={2} />
+              <Background color="#E5E4E2" variant="lines" gap={20} size={2} />
+              <Background color="#aaa" variant="dots" gap={30} size={2} />
           </ReactFlow>
-          
+          <div>
+            {/* <p>{nodes}</p> */}
+          </div>
           <div><p>Created by Josue U. and Miguelcloid R.</p></div>
           <div><p>Hire us please.</p></div>
         </div>
