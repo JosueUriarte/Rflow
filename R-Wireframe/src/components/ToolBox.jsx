@@ -1,6 +1,9 @@
 import React, {useState} from 'react'
-import { Handle, Position, Panel } from 'reactflow';
-import { Fab, Box } from '@mui/material';
+import { Fab } from '@mui/material';
+import AddCommentIcon from '@mui/icons-material/AddComment';
+import BookmarkAddSharpIcon from '@mui/icons-material/BookmarkAddSharp';
+import BookmarkRemoveSharpIcon from '@mui/icons-material/BookmarkRemoveSharp';
+import BookmarkSharpIcon from '@mui/icons-material/BookmarkSharp';
 
 
 function ToolBox({setCurrNodeType}) {
@@ -32,31 +35,31 @@ function ToolBox({setCurrNodeType}) {
     }
 
     return (
-            <div className= 'w-14 flex-col bg-gradient-to-l from-sky-500 to-indigo-500'>
+            <div className= 'btn-group btn-group-vertical rounded-3xl gap-3 z-10 mx-5 mt-20 p-3 px absolute bg-stone-500'>
                 <Fab
                 className='bg-stone-500'
-                color="success"
                 aria-label="add"
                 disabled={inputBool}
                 onClick={handleInputClick}
                 >
-                    <p className='text-xs'>input</p>
+                    <BookmarkAddSharpIcon/>
                 </Fab>
+
                 <Fab 
-                color="error"
                 aria-label="add"
                 disabled={outputBool}
                 onClick={handleOutputClick}
                 >
-                    <p className='text-xs'>output</p>
+                    <BookmarkRemoveSharpIcon/>
                 </Fab>
+
                 <Fab 
-                color="primary"
+                color="white"
                 aria-label="add"
                 disabled={defaultBool}
                 onClick={handleDefaultClick}
                 >
-                    <p className='text-xs'>default</p>
+                    <BookmarkSharpIcon/>
                 </Fab>
                 
             </div>

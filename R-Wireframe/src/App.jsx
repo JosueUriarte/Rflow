@@ -117,11 +117,11 @@ function App() {
           <ToolBox setCurrNodeType={setCurrNodeType} />
           <div 
             className='border-4 border-stone-500'
-            style={{height: '70vh', width: '200vh'}}
+            style={{height: '100vh', width: '200vh'}}
             ref={reactFlowWrapper}
             >
             
-            <ReactFlow 
+            <ReactFlow
               nodes={nodes} 
               edges={edges}
               onNodesChange={onNodesChange}
