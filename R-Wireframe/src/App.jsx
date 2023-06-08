@@ -26,7 +26,9 @@ import './components/CustomNodes/CustomNodes.css';
 
 let id = 1;
 const getId = () => `${id++}`;
-const nodeTypes = { textObject: TextObject, textNode: TextNode};
+const nodeTypes = { textObject: TextObject, 
+    textNode: TextNode
+};
 
 function App() {
   const reactFlowWrapper = useRef(null);
@@ -114,9 +116,9 @@ function App() {
       <div className='text-xs text-left flex mx-0'>
         <ReactFlowProvider className="">
           
-          <ToolBox setCurrNodeType={setCurrNodeType} />
+          <ToolBox setCurrNodeType={setCurrNodeType} currNodeType={currNodeType}/>
           <div 
-            className='border-4 border-stone-500'
+            className='border-8 rounded-xl border-stone-500'
             style={{height: '100vh', width: '200vh'}}
             ref={reactFlowWrapper}
             >
