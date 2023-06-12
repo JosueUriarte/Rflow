@@ -26,7 +26,7 @@ function ToolBox({setCurrNodeType, currNodeType}) {
                     key= {config.nodetype}
                     className='bg-stone-500'
                     aria-label="add"
-                    disabled={config.nodetype == currNodeType}
+                    disabled={config.nodetype != currNodeType}
                     onClick={() => handleButtonClick(config.nodetype)}
                     >
                         {config.icon}

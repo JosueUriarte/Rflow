@@ -44,9 +44,6 @@ function App() {
   );
   
  const handlePaneClick = (e) => {
-    //e.preventDefault();
-
-    console.log(e);
 
     const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
