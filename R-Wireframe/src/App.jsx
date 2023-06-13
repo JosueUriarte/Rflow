@@ -10,14 +10,13 @@ import ReactFlow, {
   SelectionMode,
   applyNodeChanges,
   applyEdgeChanges,
-  useKeyPress
 } from "reactflow";
 import ToolBox from "./components/ToolBox";
 import {
   nodes as initialNodes,
   edges as initialEdges,
 } from "./initial-elements";
-import Slider from '@mui/material/Slider';
+import sentencesData from './friends.json';
 
 import "reactflow/dist/style.css";
 import "./main.css";
@@ -36,6 +35,7 @@ function App() {
   const connectingNodeId = useRef(null);
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
+  const [randomSentence, setRandomSentence] = useState('')
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [currNodeType, setCurrNodeType] = useState(null);
   const [activeNode, setActiveNode] = useState(null);
@@ -47,21 +47,16 @@ function App() {
   );
 
   const handleSpawnNode = (e) => {
-    
-      if(e != null) {
-        
-        console.log("SPAWNING A NEW NODE")
-        const newNode = {
-          type: e,
-          id: getId(),
-          position: mousePosition,
-          data: { label: `Node ${id}` },
-        }
-
-        setActiveNode(newNode.id);
-        setNodes((nds) => nds.concat(newNode));
+    if(e != null) {        
+      const newNode = {
+        type: e,
+        id: getId(),
+        position: mousePosition,
+        data: { label: `Node ${id}` },
       }
-      
+      setActiveNode(newNode.id);
+      setNodes((nds) => nds.concat(newNode));
+    }
   }
 
   const handlePaneClick = (e) => {
@@ -109,6 +104,12 @@ function App() {
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     [setEdges]
   );
+
+  useEffect(() => {
+    const sentences = sentencesData.sentences
+    const randomIndex = Math.floor(Math.random() * sentences.length)
+    setRandomSentence(sentences[randomIndex])
+  }, [])
 
   useEffect(() => {
     setNodes( (nds) => 
@@ -180,7 +181,7 @@ function App() {
       </main>
       
       <footer>
-        <p>Created by Josue U. and Miguelcloid R. through the power of friendship 🥰</p>
+        <p>Created by Josue U. and Miguelcloid R. {randomSentence} </p>
       </footer>
 
     </div>
