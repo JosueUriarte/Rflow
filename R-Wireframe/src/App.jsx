@@ -17,6 +17,7 @@ import {
   nodes as initialNodes,
   edges as initialEdges,
 } from "./initial-elements";
+import Slider from '@mui/material/Slider';
 
 import "reactflow/dist/style.css";
 import "./main.css";
@@ -24,7 +25,7 @@ import TextObject from './components/CustomNodes/TextObject';
 import TextNode from './components/CustomNodes/TextNode';
 import './components/CustomNodes/CustomNodes.css';
 
-let id = 1;
+let id = 2;
 const getId = () => `${id++}`;
 const nodeTypes = { textObject: TextObject, 
     textNode: TextNode
@@ -36,31 +37,37 @@ function App() {
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [currNodeType, setCurrNodeType] = useState('input');
-
+  const [currNodeType, setCurrNodeType] = useState(null);
+  const [activeNode, setActiveNode] = useState(null);
+  const [mousePosition, setMousePosition] = useState({x: 0, y: 0});
+  
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
   );
-  
- const handlePaneClick = (e) => {
 
-    const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
+  const handleSpawnNode = (e) => {
+    
+      if(e != null) {
+        
+        console.log("SPAWNING A NEW NODE")
+        const newNode = {
+          type: e,
+          id: getId(),
+          position: mousePosition,
+          data: { label: `Node ${id}` },
+        }
 
-    const position = reactFlowInstance.project({
-      x: e.clientX - flowBounds.left,
-      y: e.clientY - flowBounds.top,
-    });
+        setActiveNode(newNode.id);
+        setNodes((nds) => nds.concat(newNode));
+      }
+      
+  }
 
-    const newNode = {
-      type: currNodeType,
-      id: getId(),
-      position,
-      data: { label: `Node ${id}` },
-    };
-
-    setNodes((nds) => nds.concat(newNode));
-  };
+  const handlePaneClick = (e) => {
+    setCurrNodeType(null)
+    setActiveNode(null)
+  }
   
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -76,10 +83,10 @@ function App() {
       const targetIsPane = e.target.classList.contains('react-flow__pane');
 
       if (targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position
+
+        // We need to remove the wrapper bounds, in order to get the correct position
         const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
-        //const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
         const position = reactFlowInstance.project({
           x: e.clientX - flowBounds.left,
           y: e.clientY - flowBounds.top,
@@ -88,12 +95,9 @@ function App() {
 
         const newNode = {
           id,
-          position,
+          position: position,
           data: { label: `Node ${id}` },
         };
-
-        setToolBoxX(position.left);
-        setToolBoxY(position.top);
       
         setNodes((nds) => nds.concat(newNode));
         setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id }));
@@ -106,14 +110,45 @@ function App() {
     [setEdges]
   );
 
+  useEffect(() => {
+    setNodes( (nds) => 
+      nds.map((node) => {
+
+        if(node.id == activeNode) {
+          node.position = mousePosition
+        }
+        return node
+      })
+    )
+  }, [mousePosition, setMousePosition, setNodes])
+
+  useEffect( () => {
+
+    const update = (e) => {
+
+      const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
+
+      setMousePosition(reactFlowInstance.project({
+        x: e.clientX - flowBounds.left,
+        y: e.clientY - flowBounds.top,
+      }))
+    }
+    window.addEventListener('mousemove', update)
+    return () => {
+      window.removeEventListener('mousemove', update)
+    }
+
+  }, [mousePosition, reactFlowInstance, setMousePosition, setNodes])
+
   return (
     <>
       <h1 className='text-3xl text-center uppercase'>Creo</h1>
-
+      <h1> ({mousePosition.x},{mousePosition.y}) </h1>
+    
       <div className='text-xs text-left flex mx-0'>
         <ReactFlowProvider className="">
           
-          <ToolBox setCurrNodeType={setCurrNodeType} currNodeType={currNodeType}/>
+          <ToolBox setCurrNodeType={setCurrNodeType} currNodeType={currNodeType} onToolboxClicked={handleSpawnNode}/>
           <div 
             className='border-8 rounded-xl border-stone-500'
             style={{height: '100vh', width: '200vh'}}
