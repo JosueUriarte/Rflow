@@ -146,8 +146,8 @@ function App() {
     <div className="flex flex-col h-screen">
 
       <header>
-        <h1 className='text-3xl text-center uppercase'>Creo</h1>
-        <h1> ({mousePosition.x},{mousePosition.y}) </h1>
+        <h1 className='text-3xl text-center uppercase p-3'>Creo</h1>
+        {/* <h1> ({mousePosition.x},{mousePosition.y}) </h1> */}
       </header>
     
       <main className='text-xs text-left flex-grow'>
@@ -155,7 +155,7 @@ function App() {
           
           <ToolBox setCurrNodeType={setCurrNodeType} currNodeType={currNodeType} onToolboxClicked={handleSpawnNode}/>
           <div 
-            className='w-full h-full border-8 rounded-xl border-stone-500'
+            className='w-full h-full border-8 border-stone-300'
             ref={reactFlowWrapper}
             >
             
@@ -175,13 +175,14 @@ function App() {
               >
                 <Controls position={'bottom-right'}/>
                 <Background  color="#aaa" variant="dots" gap={20} size={2}/>
+                <MiniMap position={'top-right'}/>
             </ReactFlow>
           </div>
         </ReactFlowProvider>
       </main>
       
       <footer>
-        <p>Created by Josue U. and Miguelcloid R. {randomSentence} </p>
+        <p className="p-3">Created by Josue U. and Miguelcloid R. {randomSentence} </p>
       </footer>
 
     </div>
