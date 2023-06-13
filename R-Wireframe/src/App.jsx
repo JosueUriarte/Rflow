@@ -142,16 +142,19 @@ function App() {
 
   return (
     <>
-      <h1 className='text-3xl text-center uppercase'>Creo</h1>
-      <h1> ({mousePosition.x},{mousePosition.y}) </h1>
+    <div className="flex flex-col h-screen">
+
+      <header>
+        <h1 className='text-3xl text-center uppercase'>Creo</h1>
+        <h1> ({mousePosition.x},{mousePosition.y}) </h1>
+      </header>
     
-      <div className='text-xs text-left flex mx-0'>
-        <ReactFlowProvider className="">
+      <main className='text-xs text-left flex-grow'>
+        <ReactFlowProvider>
           
           <ToolBox setCurrNodeType={setCurrNodeType} currNodeType={currNodeType} onToolboxClicked={handleSpawnNode}/>
           <div 
-            className='border-8 rounded-xl border-stone-500'
-            style={{height: '100vh', width: '200vh'}}
+            className='w-full h-full border-8 rounded-xl border-stone-500'
             ref={reactFlowWrapper}
             >
             
@@ -162,7 +165,7 @@ function App() {
               onEdgesChange={onEdgesChange}
               onInit={setReactFlowInstance}
               nodeTypes={nodeTypes}
-              selectionMode={SelectionMode.Partial}
+              selectionMode={SelectionMode.Full}
               onPaneClick={handlePaneClick}
               onConnect={onConnect}
               onConnectStart={onConnectStart}
@@ -172,16 +175,15 @@ function App() {
                 <Controls position={'bottom-right'}/>
                 <Background  color="#aaa" variant="dots" gap={20} size={2}/>
             </ReactFlow>
-            <div>
-            </div>
           </div>
         </ReactFlowProvider>
-      </div>
+      </main>
       
-      <div>
-        <p>Created by Josue U. and Miguelcloid R.</p>
-        <p>Hire us please.</p>
-      </div>
+      <footer>
+        <p>Created by Josue U. and Miguelcloid R. through the power of friendship 🥰</p>
+      </footer>
+
+    </div>
     </>
   );
 }
