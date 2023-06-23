@@ -1,16 +1,23 @@
-import { useCallback } from 'react';
-import { Handle, Position } from 'reactflow';
-import './CustomNodes.css';
-const handleStyle = { left: 10 };
+import { useState, useCallback } from "react";
+import { Handle, Position } from "reactflow";
+import ContentEditable from "react-contenteditable";
+import "./CustomNodes.css";
 
 function TextObject({ data, isConnectable }) {
-  const onChange = useCallback((evt) => {
-    console.log(evt.target.value);
+  const [content, setContent] = useState("Sample Text Object");
+
+  const onContentChange = useCallback((evt) => {
+    setContent(evt.currentTarget.innerHTML);
   }, []);
 
   return (
-    <blockquote contentEditable="true">
-        <p>Lets get it started in here</p>
+    <blockquote>
+      <ContentEditable
+        onChange={onContentChange}
+        onBlur={onContentChange}
+        disabled={false}
+        html={content}
+      />
     </blockquote>
   );
 }
