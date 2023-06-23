@@ -4,6 +4,7 @@ import './CustomNodes.css';
 const handleStyle = { left: 10 };
 
 function TextObject({ data, isConnectable }) {
+  
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);

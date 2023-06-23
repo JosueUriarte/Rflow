@@ -12,23 +12,32 @@ import ReactFlow, {
   applyEdgeChanges,
 } from "reactflow";
 import ToolBox from "./components/ToolBox";
+
 import {
   nodes as initialNodes,
   edges as initialEdges,
 } from "./initial-elements";
+
 import sentencesData from './friends.json';
 
 import "reactflow/dist/style.css";
 import "./main.css";
+
 import TextObject from './components/CustomNodes/TextObject';
+import CircleNode from './components/CustomNodes/CircleNode';
+import TriangleNode from './components/CustomNodes/TriangleNode';
 import TextNode from './components/CustomNodes/TextNode';
 import './components/CustomNodes/CustomNodes.css';
 
+const nodeTypes = { 
+  textObject: TextObject, 
+  textNode: TextNode,
+  circleNode: CircleNode,
+  triangleNode: TriangleNode,
+};
+
 let id = 2;
 const getId = () => `${id++}`;
-const nodeTypes = { textObject: TextObject, 
-    textNode: TextNode
-};
 
 function App() {
   const reactFlowWrapper = useRef(null);
@@ -147,7 +156,6 @@ function App() {
 
       <header>
         <h1 className='text-3xl text-center uppercase p-3'>Creo</h1>
-        {/* <h1> ({mousePosition.x},{mousePosition.y}) </h1> */}
       </header>
     
       <main className='text-xs text-left flex-grow'>
