@@ -22,6 +22,8 @@ import sentencesData from "./friends.json";
 
 import "reactflow/dist/style.css";
 import "./main.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import TextObject from "./components/CustomNodes/TextObject";
 import CircleNode from "./components/CustomNodes/CircleNode";
@@ -189,9 +191,20 @@ function App() {
         </main>
 
         <footer>
-          <p className="p-3">
-            Created by Josue U. and Miguelcloid R. {randomSentence}{" "}
-          </p>
+          <div class="footer-content">
+            <p class="left-text">
+              Created by Josue U. and Miguelcloid R. {randomSentence}
+            </p>
+            <p class="right-text">
+              Check out our{" "}
+              <a href="https://github.com/JosueUriarte/R-Wireframe/tree/main">
+                GitHub Project
+              </a>
+              <span class="logo-space">
+                <FontAwesomeIcon icon={faGithub} />
+              </span>{" "}
+            </p>{" "}
+          </div>
         </footer>
       </div>
     </>

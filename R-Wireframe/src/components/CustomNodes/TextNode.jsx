@@ -1,5 +1,4 @@
 import { useRef, useCallback } from "react";
-import ContentEditable from "react-contenteditable";
 // https://blixtdev.com/how-to-use-contenteditable-with-react/
 // TODO: look into santizehtml, author says its used for xml attacks
 // TODO: add dynamic logic node name (prob with data)
@@ -24,14 +23,24 @@ function TextNode({ data, isConnectable }) {
 
   return (
     <div className="text-updater-node">
-      <blockquote>
-        <ContentEditable
-          onChange={handleContentChange}
-          onClick={handleOnClick}
-          disabled={false}
-          html={text.current}
-        />
-      </blockquote>
+      <textarea
+        ref={textareaRef}
+        defaultValue="test"
+        style={{
+          background: "none",
+          border: "none",
+          resize: "none",
+          width: "100%",
+          height: "auto",
+          overflow: "hidden",
+          fontSize: "inherit",
+          fontFamily: "inherit",
+          color: "inherit",
+          outline: "none",
+        }}
+        onClick={handleOnClick}
+        onChange={handleOnChange}
+      />
     </div>
   );
 }

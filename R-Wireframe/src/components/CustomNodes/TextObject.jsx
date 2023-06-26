@@ -1,35 +1,39 @@
 import { useRef, useCallback } from "react";
 import { Handle, Position } from "reactflow";
-import ContentEditable from "react-contenteditable";
 import "./CustomNodes.css";
 
 function TextObject({ data, isConnectable }) {
-  const text = useRef("test");
+  const textareaRef = useRef(null);
 
-  const handleContentChange = (evt) => {
-    text.current = evt.target.value;
-  };
+  const handleOnClick = useCallback(() => {
+    textareaRef.current.focus();
+  }, []);
 
-  const handleOnClick = (evt) => {
-    // Check detail if user double click the node
-    if (evt.detail == 2 && window.getSelection) {
-      let selection = window.getSelection();
-      let range = document.createRange();
-      range.selectNodeContents(evt.target);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  };
+  const handleOnChange = useCallback(() => {
+    const textarea = textareaRef.current;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, []);
 
   return (
-    <blockquote>
-      <ContentEditable
-        onChange={handleContentChange}
-        onClick={handleOnClick}
-        disabled={false}
-        html={text.current}
-      />
-    </blockquote>
+    <textarea
+      ref={textareaRef}
+      defaultValue="test"
+      style={{
+        background: "none",
+        border: "none",
+        resize: "none",
+        width: "100%",
+        height: "auto",
+        overflow: "hidden",
+        fontSize: "inherit",
+        fontFamily: "inherit",
+        color: "inherit",
+        outline: "none",
+      }}
+      onClick={handleOnClick}
+      onChange={handleOnChange}
+    />
   );
 }
 
