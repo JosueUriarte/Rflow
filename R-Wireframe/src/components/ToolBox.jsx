@@ -1,22 +1,16 @@
 import React, {useState} from 'react'
 import { Fab } from '@mui/material';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
-import BookmarkRemoveSharpIcon from '@mui/icons-material/BookmarkRemoveSharp';
-import BookmarkSharpIcon from '@mui/icons-material/BookmarkSharp';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import RttIcon from '@mui/icons-material/Rtt';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import InputIcon from '@mui/icons-material/Input';
+import LensIcon from '@mui/icons-material/Lens';
+import SquareRoundedIcon from '@mui/icons-material/SquareRounded';
+import { Icon } from '@iconify/react';
 
 
 
-//
 const buttonConfig = [
-    {nodetype: 'input', icon: <AddBoxIcon/>}, 
-    {nodetype:'default', icon: <CheckBoxOutlineBlankIcon/>}, 
-    {nodetype: 'output', icon: <IndeterminateCheckBoxIcon/>},
-    {nodetype: 'textNode', icon: <TextSnippetIcon/>},
+    {nodetype: 'input', icon: <SquareRoundedIcon/>}, 
+    {nodetype: 'circleNode', icon: <LensIcon/>},
+    {nodetype: 'triangleNode', icon: <Icon icon="mdi:triangle" width="25" />},
     {nodetype: 'textObject', icon: <RttIcon/>},
 ]
 
