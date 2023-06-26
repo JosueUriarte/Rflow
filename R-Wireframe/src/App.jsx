@@ -191,16 +191,17 @@ function App() {
         </main>
 
         <footer>
-          <div class="footer-content">
-            <p class="left-text">
+          <div className="footer-content">
+            <p className="left-text">
               Created by Josue U. and Miguelcloid R. {randomSentence}
             </p>
-            <p class="right-text">
-              Check out our{" "}
-              <a href="https://github.com/JosueUriarte/R-Wireframe/tree/main">
+            <p className="right-text">
+              Check out the{" "}
+              <a href="https://github.com/JosueUriarte/R-Wireframe/tree/main"
+              className="github-link">
                 GitHub Project
               </a>
-              <span class="logo-space">
+              <span className="logo-space">
                 <FontAwesomeIcon icon={faGithub} />
               </span>{" "}
             </p>{" "}

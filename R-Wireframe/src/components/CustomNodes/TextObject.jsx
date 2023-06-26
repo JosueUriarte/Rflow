@@ -5,20 +5,11 @@ import "./CustomNodes.css";
 function TextObject({ data, isConnectable }) {
   const textareaRef = useRef(null);
 
-  const handleOnClick = useCallback(() => {
-    textareaRef.current.focus();
-  }, []);
-
-  const handleOnChange = useCallback(() => {
-    const textarea = textareaRef.current;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }, []);
 
   return (
     <textarea
       ref={textareaRef}
-      defaultValue="test"
+      defaultValue="Hello World"
       style={{
         background: "none",
         border: "none",
@@ -31,8 +22,6 @@ function TextObject({ data, isConnectable }) {
         color: "inherit",
         outline: "none",
       }}
-      onClick={handleOnClick}
-      onChange={handleOnChange}
     />
   );
 }

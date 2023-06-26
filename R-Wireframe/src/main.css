@@ -9,6 +9,10 @@ footer {
   background-color: #f9f9f9;
 }
 
+.github-link {
+  color: blue;
+}
+
 .footer-content {
   display: flex;
   justify-content: space-between;
