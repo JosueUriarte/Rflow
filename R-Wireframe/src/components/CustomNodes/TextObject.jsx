@@ -1,18 +1,28 @@
-import { useCallback } from 'react';
-import { Handle, Position } from 'reactflow';
-import './CustomNodes.css';
-const handleStyle = { left: 10 };
+import { useRef, useCallback } from "react";
+import { Handle, Position } from "reactflow";
+import "./CustomNodes.css";
 
 function TextObject({ data, isConnectable }) {
-  
-  const onChange = useCallback((evt) => {
-    console.log(evt.target.value);
-  }, []);
+  const textareaRef = useRef(null);
+
 
   return (
-    <blockquote contentEditable="true">
-        <p>Lets get it started in here</p>
-    </blockquote>
+    <textarea
+      ref={textareaRef}
+      defaultValue="Hello World"
+      style={{
+        background: "none",
+        border: "none",
+        resize: "none",
+        width: "100%",
+        height: "auto",
+        overflow: "hidden",
+        fontSize: "inherit",
+        fontFamily: "inherit",
+        color: "inherit",
+        outline: "none",
+      }}
+    />
   );
 }
 
