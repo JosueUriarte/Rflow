@@ -197,8 +197,10 @@ function App() {
             </p>
             <p className="right-text">
               Check out the{" "}
-              <a href="https://github.com/JosueUriarte/R-Wireframe/tree/main"
-              className="github-link">
+              <a
+                href="https://github.com/JosueUriarte/R-Wireframe/tree/main"
+                className="github-link"
+              >
                 GitHub Project
               </a>
               <span className="logo-space">
