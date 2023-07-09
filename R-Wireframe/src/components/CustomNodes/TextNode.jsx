@@ -2,13 +2,10 @@ import { useRef, useCallback } from "react";
 // https://blixtdev.com/how-to-use-contenteditable-with-react/
 // TODO: look into santizehtml, author says its used for xml attacks
 // TODO: add dynamic logic node name (prob with data)
-// TODO: Fix clicking on text to cursor mechanic
 function TextNode({ data, isConnectable }) {
-
   return (
     <div className="text-updater-node">
       <textarea
-        ref={textareaRef}
         defaultValue="Hello World"
         style={{
           background: "none",

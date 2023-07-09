@@ -3,12 +3,8 @@ import { Handle, Position } from "reactflow";
 import "./CustomNodes.css";
 
 function TextObject({ data, isConnectable }) {
-  const textareaRef = useRef(null);
-
-
   return (
     <textarea
-      ref={textareaRef}
       defaultValue="Hello World"
       style={{
         background: "none",

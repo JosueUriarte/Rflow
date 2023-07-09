@@ -38,7 +38,9 @@ const nodeTypes = {
   triangleNode: TriangleNode,
 };
 
-let id = 2;
+let id = 0;
+// TODO: make defaultViewport dynamic
+let defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 const getId = () => `${id++}`;
 
 function App() {
@@ -59,9 +61,10 @@ function App() {
 
   const handleSpawnNode = (e) => {
     if (e != null) {
+      let id = getId();
       const newNode = {
         type: e,
-        id: getId(),
+        id: id,
         position: mousePosition,
         data: { label: `Node ${id}` },
       };
@@ -115,12 +118,14 @@ function App() {
     [setEdges]
   );
 
+  // Generates a random sentence from predefined array at bottom left
   useEffect(() => {
     const sentences = sentencesData.sentences;
     const randomIndex = Math.floor(Math.random() * sentences.length);
     setRandomSentence(sentences[randomIndex]);
   }, []);
 
+  // moves current active node based on mouse position
   useEffect(() => {
     setNodes((nds) =>
       nds.map((node) => {
@@ -132,6 +137,7 @@ function App() {
     );
   }, [mousePosition, setMousePosition, setNodes]);
 
+  // updates viewPort based on mouse position
   useEffect(() => {
     const update = (e) => {
       const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -180,7 +186,7 @@ function App() {
                 onConnect={onConnect}
                 onConnectStart={onConnectStart}
                 onConnectEnd={onConnectEnd}
-                fitView
+                defaultViewport={defaultViewport}
               >
                 <Controls position={"bottom-right"} />
                 <Background color="#aaa" variant="dots" gap={20} size={2} />
