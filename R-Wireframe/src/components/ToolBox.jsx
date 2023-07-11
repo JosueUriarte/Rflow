@@ -8,7 +8,7 @@ import { Icon } from '@iconify/react';
 
 
 const buttonConfig = [
-    {nodetype: 'input', icon: <SquareRoundedIcon/>}, 
+    {nodetype: 'textNode', icon: <SquareRoundedIcon/>}, 
     {nodetype: 'circleNode', icon: <LensIcon/>},
     {nodetype: 'triangleNode', icon: <Icon icon="mdi:triangle" width="25" />},
     {nodetype: 'textObject', icon: <RttIcon/>},
