@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Handle, Position } from "reactflow";
-import TextObject from "./TextObject";
+import TextInput from "./UserInputFields/TextInput";
 
 function CircleNode({ data, isConnectable }) {
   const [text, setText] = useState(data.label || "");
@@ -42,7 +42,7 @@ function CircleNode({ data, isConnectable }) {
             color: "white",
           }}
         >
-          <TextObject value={text} onChange={handleChange} />
+          <TextInput value={text} onChange={handleChange} />
         </div>
       </div>
     </div>

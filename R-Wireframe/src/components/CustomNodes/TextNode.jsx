@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
-
+import TextInput from "./UserInputFields/TextInput";
+// TODO: fix double click behavior to switch behavior to double click a word
 function TextNode(data) {
   const [readBool, setReadBool] = useState(true);
   const textareaRef = useRef(null);
@@ -18,33 +19,13 @@ function TextNode(data) {
     setReadBool(true);
   };
 
-  const textareaStyle = {
-    background: "none",
-    border: "none",
-    resize: "none",
-    width: "100%",
-    height: "auto",
-    overflow: "hidden",
-    fontSize: "inherit",
-    fontFamily: "inherit",
-    color: "inherit",
-    outline: "none",
-    textAlign: "center",
-    cursor: readBool ? "default" : "auto",
-  };
-
   return (
     <div
       className="text-updater-node"
       onDoubleClick={handleOnDoubleClick}
       onBlur={handleOnBlur}
     >
-      <textarea
-        ref={textareaRef}
-        readOnly={readBool}
-        defaultValue="Hello World"
-        style={textareaStyle}
-      />
+      <TextInput readBool={readBool} />
     </div>
   );
 }

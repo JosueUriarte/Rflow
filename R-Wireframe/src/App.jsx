@@ -25,7 +25,7 @@ import "./main.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
-import TextObject from "./components/CustomNodes/TextObject";
+import TextObject from "./components/CustomNodes/UserInputFields/TextInput";
 import CircleNode from "./components/CustomNodes/CircleNode";
 import TriangleNode from "./components/CustomNodes/TriangleNode";
 import TextNode from "./components/CustomNodes/TextNode";
@@ -155,6 +155,7 @@ function App() {
     };
   }, [mousePosition, reactFlowInstance, setMousePosition, setNodes]);
 
+  // TODO: Seperate Header and Footer into own components
   return (
     <>
       <div className="flex flex-col h-screen">
