@@ -136,10 +136,12 @@ function App() {
       })
     );
   }, [mousePosition, setMousePosition, setNodes]);
+  
 
   // updates viewPort based on mouse position
   useEffect(() => {
     const update = (e) => {
+      if ((!reactFlowInstance) || (!reactFlowWrapper)) {return;}
       const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
       setMousePosition(
