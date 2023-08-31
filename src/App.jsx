@@ -103,6 +103,7 @@ function App() {
       const newNode = {
         id,
         position: position,
+        selected: false,
         data: { label: `Node ${id}` },
       };
 
@@ -136,12 +137,14 @@ function App() {
       })
     );
   }, [mousePosition, setMousePosition, setNodes]);
-  
 
   // updates viewPort based on mouse position
   useEffect(() => {
     const update = (e) => {
-      if ((!reactFlowInstance) || (!reactFlowWrapper)) {return;}
+      if ((!reactFlowInstance) || (!reactFlowWrapper)) {
+        return;
+      }
+      
       const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
       setMousePosition(

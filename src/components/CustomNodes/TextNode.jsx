@@ -1,20 +1,18 @@
-import React, { useState } from "react";
-import TextInput from "./UserInputFields/TextInput";
-// TODO: fix double click behavior to switch behavior to double click a word
-function TextNode(data) {
-  const [readBool, setReadBool] = useState(true);
+import TextareaAutosize from '@mui/material/TextareaAutosize';
 
-  const handleOnDoubleClick = (e) => {
-    //console.log(JSON.stringify(e));
-  };
+// TODO: make rows bigger and make input start at middle of row.
+function TextNode(node) {
+  const {selected} = node;
 
-  const handleOnBlur = (e) => {
-  };
+
 
   return (
-    <div className="text-updater-node">
-      <TextInput />
-    </div>
+      <TextareaAutosize
+          className={selected ? "selected-text-updater-node" : "text-updater-node"}
+          style={{resize: 'none', fontFamily: 'Roboto', outline: 'none', textAlign: 'center'}}  
+          placeholder="Add text"
+          minRows={1}
+      />     
   );
 }
 

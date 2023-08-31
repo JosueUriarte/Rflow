@@ -1,30 +1,11 @@
-import { useState } from "react";
-import { Handle, Position, useStore } from "reactflow";
+import TextareaAutosize from '@mui/material/TextareaAutosize';
 
 function TextInput() {
-
-  const handleOnDoubleClick = (e) => {
-    // if (textareaRef.current) {
-    //   textareaRef.current.setSelectionRange(
-    //     textareaRef.current.value.length,
-    //     textareaRef.current.value.length
-    //   );
-    // }
-  };
-
-  const [width, setWidth] = useState(0);
-
-  const onChangeHandler = (e) => {
-    setWidth(e.target.value.length);
-  };
-
-  const styles = {
-    resize: "none",
-  };
-
-
-  return (
-    <textarea style={{resize: 'none', width: width +'ch' }} onChange={onChangeHandler}></textarea>
+return (
+    <TextareaAutosize 
+      placeholder="Add text"
+      minRows={1}
+    /> 
   );
 }
 
