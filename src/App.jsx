@@ -25,20 +25,25 @@ import "./main.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
-import TextObject from "./components/CustomNodes/TextObject";
+import TextNode from "./components/CustomNodes/TextNode";
 import CircleNode from "./components/CustomNodes/CircleNode";
 import TriangleNode from "./components/CustomNodes/TriangleNode";
-import TextNode from "./components/CustomNodes/TextNode";
+import TextInput from "./components/CustomNodes/UserInputNodes/TextInput";
 import "./components/CustomNodes/CustomNodes.css";
 
 const nodeTypes = {
-  textObject: TextObject,
   textNode: TextNode,
+  textInput: TextInput,
   circleNode: CircleNode,
   triangleNode: TriangleNode,
 };
 
-let id = 2;
+let id = 0;
+// TODO: make defaultViewport dynamic
+// TODO: make font size dictate the min. resize of a node
+// TODO: change all setNode logic to be more efficient and into one function
+// TODO: props validiation for child nodes
+let defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 const getId = () => `${id++}`;
 
 function App() {
@@ -51,6 +56,8 @@ function App() {
   const [currNodeType, setCurrNodeType] = useState(null);
   const [activeNode, setActiveNode] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [panOnDrag, setPanOnDrag] = useState(true);
+  const [nodeSpawnMode, setNodeSpawnMode] = useState(false);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -59,20 +66,29 @@ function App() {
 
   const handleSpawnNode = (e) => {
     if (e != null) {
+      let id = getId();
       const newNode = {
         type: e,
-        id: getId(),
+        id: id,
         position: mousePosition,
-        data: { label: `Node ${id}` },
+        data: { label: `Node ${id}`, 
+                activeState: false
+              },
       };
+      setNodeSpawnMode(true);
       setActiveNode(newNode.id);
       setNodes((nds) => nds.concat(newNode));
     }
   };
 
   const handlePaneClick = (e) => {
+    // console.log('paneCLicked, e.clientX: ' + e.clientX);
+    // console.log('paneCLicked, e.clientY: ' + e.clientY);
     setCurrNodeType(null);
     setActiveNode(null);
+    setPanOnDrag(true);
+    setNodeSpawnMode(false);
+    //console.log('pane clicked');
   };
 
   const onConnect = useCallback(
@@ -100,6 +116,7 @@ function App() {
       const newNode = {
         id,
         position: position,
+        selected: false,
         data: { label: `Node ${id}` },
       };
 
@@ -115,25 +132,75 @@ function App() {
     [setEdges]
   );
 
+  const handleOnNodeClick = (e, selectedNode) => {
+    //console.log('e.target: ' + e.target.className);
+    //console.log('App.jsx: ' + JSON.stringify(selectedNode.data));
+
+    if (activeNode != null && activeNode != selectedNode.id) {
+      // another node was clicked
+      setActiveNode(null);
+    }
+
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id == selectedNode.id) {
+          let activeState = false;
+          
+          if ((activeNode != null && activeNode == selectedNode.id) || (e.target.className == 'resize-handle nodrag')) {
+            // not the first iteration we click on this node, switch to active state
+            activeState = true;
+          }
+          
+          let draggable = (activeState) ? false : true;
+
+          // set panondrag to false so node can be dragged without conflict
+          setPanOnDrag(false);
+
+          // console.log('draggable: ' + draggable);
+
+          node.data = {
+            ...node.data,
+            activeState: activeState,
+          };
+          node.draggable = draggable;
+        }
+        return node;
+      })
+    );
+
+    setActiveNode(selectedNode.id);
+
+  };
+
+
+  // Generates a random sentence from predefined array at bottom left
   useEffect(() => {
     const sentences = sentencesData.sentences;
     const randomIndex = Math.floor(Math.random() * sentences.length);
     setRandomSentence(sentences[randomIndex]);
   }, []);
 
+  // moves current active node based on mouse position
   useEffect(() => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id == activeNode) {
-          node.position = mousePosition;
-        }
-        return node;
-      })
-    );
-  }, [mousePosition, setMousePosition, setNodes]);
+    if (nodeSpawnMode) {    
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id == activeNode) {
+            node.position = mousePosition;
+          }
+          return node;
+        })
+      );
+    }
+  }, [mousePosition, nodeSpawnMode, activeNode, setMousePosition, setNodes]);
 
+  // updates viewPort based on mouse position
   useEffect(() => {
     const update = (e) => {
+      if ((!reactFlowInstance) || (!reactFlowWrapper)) {
+        return;
+      }
+      
       const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
       setMousePosition(
@@ -149,6 +216,7 @@ function App() {
     };
   }, [mousePosition, reactFlowInstance, setMousePosition, setNodes]);
 
+  // TODO: Seperate Header and Footer into own components
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -180,7 +248,9 @@ function App() {
                 onConnect={onConnect}
                 onConnectStart={onConnectStart}
                 onConnectEnd={onConnectEnd}
-                fitView
+                defaultViewport={defaultViewport}
+                onNodeClick={handleOnNodeClick}
+                panOnDrag={panOnDrag}
               >
                 <Controls position={"bottom-right"} />
                 <Background color="#aaa" variant="dots" gap={20} size={2} />
