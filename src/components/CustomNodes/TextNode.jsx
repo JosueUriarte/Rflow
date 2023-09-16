@@ -32,22 +32,31 @@ function TextNode(node) {
   };
 
   return (
-    <>
+    <div>
       <NodeResizer
         color="#ff0071"
         isVisible={selected}
-        minWidth={1}
-        minHeight={1}
         onResize={handleResize}
       />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className={selected || data.activeState ? "hide" : ""}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className={selected || data.activeState ? "hide" : ""}
+      />
+
       <TextareaAutosize
         ref={textAreaRef}
-        className='text-node'
+        className="text-node"
         placeholder="Double Click to Edit"
         minRows={1}
         readOnly={activeState}
       />
-    </>
+    </div>
   );
 }
 
