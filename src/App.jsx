@@ -43,6 +43,11 @@ let id = 0;
 // TODO: make font size dictate the min. resize of a node
 // TODO: change all setNode logic to be more efficient and into one function
 // TODO: props validiation for child nodes
+// TODO: fix layout rendering error when resizing node (better conditionals and css)
+// TODO: make two backgeounds with alternating big dot small dot
+// TODO: put setNodes into one function instead of calling it multiple times
+// TODO: fix node edge spawn bug with edge detection
+// TODO: fix edge bug when resizing parent node and its connected to child node
 let defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 const getId = () => `${id++}`;
 
@@ -58,6 +63,7 @@ function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [panOnDrag, setPanOnDrag] = useState(true);
   const [nodeSpawnMode, setNodeSpawnMode] = useState(false);
+  const [isHandleSource, setHandleSource] = useState(false);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -71,9 +77,7 @@ function App() {
         type: e,
         id: id,
         position: mousePosition,
-        data: { label: `Node ${id}`, 
-                activeState: false
-              },
+        data: { label: `Node ${id}`, activeState: false },
       };
       setNodeSpawnMode(true);
       setActiveNode(newNode.id);
@@ -85,6 +89,20 @@ function App() {
     // console.log('paneCLicked, e.clientX: ' + e.clientX);
     // console.log('paneCLicked, e.clientY: ' + e.clientY);
     setCurrNodeType(null);
+    if (activeNode != null) {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id == activeNode && node.draggable == false) {
+            node.data = {
+              ...node.data,
+              activeState: false,
+            };
+            node.draggable = true;
+          }
+          return node;
+        })
+      );
+    }
     setActiveNode(null);
     setPanOnDrag(true);
     setNodeSpawnMode(false);
@@ -96,14 +114,16 @@ function App() {
     [setEdges]
   );
 
-  const onConnectStart = useCallback((_, { nodeId }) => {
+  const onConnectStart = useCallback((e, { nodeId, handleId, handleType }) => {
     connectingNodeId.current = nodeId;
+    setHandleSource(handleType === "source");
   }, []);
 
   const onConnectEnd = useCallback((e) => {
     const targetIsPane = e.target.classList.contains("react-flow__pane");
 
-    if (targetIsPane) {
+    // adds node to pane
+    if (targetIsPane && isHandleSource) {
       // We need to remove the wrapper bounds, in order to get the correct position
       const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
@@ -112,8 +132,16 @@ function App() {
         y: e.clientY - flowBounds.top,
       });
       const id = getId();
+      let nodeType = null;
+
+      for (const node of nodes) {
+        if (node.id == connectingNodeId.current) {
+          nodeType = node.type;
+        }
+      }
 
       const newNode = {
+        type: nodeType != null ? nodeType : "",
         id,
         position: position,
         selected: false,
@@ -125,6 +153,7 @@ function App() {
         eds.concat({ id, source: connectingNodeId.current, target: id })
       );
     }
+    setHandleSource(false);
   });
 
   const onEdgesChange = useCallback(
@@ -145,13 +174,16 @@ function App() {
       nds.map((node) => {
         if (node.id == selectedNode.id) {
           let activeState = false;
-          
-          if ((activeNode != null && activeNode == selectedNode.id) || (e.target.className == 'resize-handle nodrag')) {
+
+          if (
+            (activeNode != null && activeNode == selectedNode.id) ||
+            e.target.className == "resize-handle nodrag"
+          ) {
             // not the first iteration we click on this node, switch to active state
             activeState = true;
           }
-          
-          let draggable = (activeState) ? false : true;
+
+          let draggable = activeState ? false : true;
 
           // set panondrag to false so node can be dragged without conflict
           setPanOnDrag(false);
@@ -169,9 +201,7 @@ function App() {
     );
 
     setActiveNode(selectedNode.id);
-
   };
-
 
   // Generates a random sentence from predefined array at bottom left
   useEffect(() => {
@@ -182,7 +212,7 @@ function App() {
 
   // moves current active node based on mouse position
   useEffect(() => {
-    if (nodeSpawnMode) {    
+    if (nodeSpawnMode) {
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id == activeNode) {
@@ -197,10 +227,10 @@ function App() {
   // updates viewPort based on mouse position
   useEffect(() => {
     const update = (e) => {
-      if ((!reactFlowInstance) || (!reactFlowWrapper)) {
+      if (!reactFlowInstance || !reactFlowWrapper) {
         return;
       }
-      
+
       const flowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
       setMousePosition(
@@ -215,6 +245,11 @@ function App() {
       window.removeEventListener("mousemove", update);
     };
   }, [mousePosition, reactFlowInstance, setMousePosition, setNodes]);
+
+  // TODO: put this in own css file
+  const reactFlowStyle = {
+    background: "#F0F4F7",
+  };
 
   // TODO: Seperate Header and Footer into own components
   return (
@@ -237,6 +272,7 @@ function App() {
               ref={reactFlowWrapper}
             >
               <ReactFlow
+                style={reactFlowStyle}
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}

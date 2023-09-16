@@ -1,50 +1,65 @@
-import { useCallback, useState } from "react";
-import { Handle, Position } from "reactflow";
+import { useState, useEffect, useRef } from "react";
+import { NodeResizer, Handle, Position } from "reactflow";
 import TextInput from "./UserInputNodes/TextInput";
+import { TextareaAutosize } from "@mui/base";
 
-function CircleNode({selected, data, isConnectable}) {
-  const [text, setText] = useState(data.label || "");
+function CircleNode(node) {
+  const { selected, data } = node;
+  const [activeState, setActiveState] = useState(false);
+  const [textAreaWidth, setTextAreaWidth] = useState(node.width); // Initial width
+  const [textAreaHeight, setTextAreaHeight] = useState(node.height); // Initial height
+  const textAreaRef = useRef(null);
+  const nodeResizerRef = useRef(null);
 
-  const handleChange = useCallback((e) => {
-    setText(e.target.value);
-  }, []);
+  // used to change state when in active node state
+  useEffect(() => {
+    if (data.activeState) {
+      setActiveState(false);
+    } else {
+      setActiveState(true);
+    }
+  }, [activeState, setActiveState, data.activeState]);
 
-  const circleSize = 80; // Adjust the scaling factor as needed
+  const handleResize = (e, e2) => {
+    // need this conditional to prevent multiple re-renders of the textArea
+    if (
+      e2.width !== textAreaWidth ||
+      e2.height !== nodeResizerRef.current.style.height ||
+      e2.width !== nodeResizerRef.current.style.width
+    ) {
+      setTextAreaWidth(e2.width);
+      setTextAreaHeight(e2.height);
+      // Update the textarea's style using the ref
+      textAreaRef.current.style.width = `${e2.width}px`;
+      nodeResizerRef.current.style.width = `${e2.width}px`;
+      nodeResizerRef.current.style.height = `${e2.height}px`;
+    }
+  };
 
   return (
-    <div
-      style={{
-        width: `${circleSize}px`,
-        height: `${circleSize}px`,
-        borderRadius: "50%",
-        background: "#555",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <div ref={nodeResizerRef} className="circle-node">
+      <NodeResizer
+        color="#ff0071"
+        isVisible={selected}
+        onResize={handleResize}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className={selected || data.activeState ? "hide" : ""}
+      />
       <Handle
         type="source"
-        position={Position.Bottom}
-        style={{ background: "#555" }}
-        onConnect={(params) => console.log("handle onConnect", params)}
-        isConnectable={isConnectable}
+        position={Position.Right}
+        className={selected || data.activeState ? "hide" : ""}
       />
-
-      <div style={{ position: "relative", width: "100%", height: "100%" }}>
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center",
-            color: "white",
-          }}
-        >
-          <TextInput data={data} selected={selected} onChange={handleChange}/>
-        </div>
-      </div>
+      <TextareaAutosize
+        ref={textAreaRef}
+        className="circle-text-node"
+        placeholder="Double Click to Edit"
+        minRows={1}
+        readOnly={activeState}
+      />
     </div>
   );
 }
