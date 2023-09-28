@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ReactFlow, {
   ReactFlowProvider,
   MiniMap,
@@ -22,8 +23,6 @@ import sentencesData from "./friends.json";
 
 import "reactflow/dist/style.css";
 import "./main.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import TextNode from "./components/CustomNodes/TextNode";
 import CircleNode from "./components/CustomNodes/CircleNode";
@@ -31,12 +30,25 @@ import TriangleNode from "./components/CustomNodes/TriangleNode";
 import TextInput from "./components/CustomNodes/UserInputNodes/TextInput";
 import "./components/CustomNodes/CustomNodes.css";
 
+import { AppBar, Grid, IconButton, Menu, Paper, styled } from "@mui/material";
+import { WhiteboardContextProvider } from "./context/WhiteboardContext.jsx";
+
+import NavBar from "./components/NavBar";
+
 const nodeTypes = {
   textNode: TextNode,
   textInput: TextInput,
   circleNode: CircleNode,
   triangleNode: TriangleNode,
 };
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: "center",
+  color: theme.palette.text.secondary,
+}));
 
 let id = 0;
 // TODO: make defaultViewport dynamic
@@ -48,6 +60,7 @@ let id = 0;
 // TODO: put setNodes into one function instead of calling it multiple times
 // TODO: fix node edge spawn bug with edge detection
 // TODO: fix edge bug when resizing parent node and its connected to child node
+// TODO: fix minimap bug
 let defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 const getId = () => `${id++}`;
 
@@ -251,14 +264,45 @@ function App() {
     background: "#F0F4F7",
   };
 
+  /*
+  <Grid container spacing={2}>
+                <Grid item xs={8}>
+                  <Routes>
+                    <Route path="/" element={<WhiteboardPage />} />
+                  </Routes>
+                </Grid>
+                <Grid item xs={4}>
+                  <Item>xs=4</Item>
+                </Grid>
+                <Grid item xs={4}>
+                  <Item>xs=4</Item>
+                </Grid>
+                <Grid item xs={8}>
+                  <Item>xs=8</Item>
+                </Grid>
+              </Grid>
+  */
+
   // TODO: Seperate Header and Footer into own components
   return (
     <>
+      <AppBar position="static">
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          sx={{ mr: 2 }}
+        />
+      </AppBar>
       <div className="flex flex-col h-screen">
-        <header>
-          <h1 className="text-3xl text-center uppercase p-3">Creo</h1>
-          {/* <h1> ({mousePosition.x},{mousePosition.y}) </h1> */}
-        </header>
+        <div>
+          <header>
+            <WhiteboardContextProvider>
+              <NavBar />
+            </WhiteboardContextProvider>
+          </header>
+        </div>
 
         <main className="text-xs text-left flex-grow">
           <ReactFlowProvider>
@@ -309,9 +353,7 @@ function App() {
               >
                 GitHub Project
               </a>
-              <span className="logo-space">
-                <FontAwesomeIcon icon={faGithub} />
-              </span>{" "}
+              <span className="logo-space"></span>{" "}
             </p>{" "}
           </div>
         </footer>
