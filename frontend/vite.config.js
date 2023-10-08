@@ -11,6 +11,11 @@ export default defineConfig({
         changeOrigin: true,
         // Other proxy options
       },
+      "/api/user": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+        // Other proxy options
+      },
     },
   },
 });

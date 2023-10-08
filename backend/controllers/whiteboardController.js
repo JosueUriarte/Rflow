@@ -43,7 +43,6 @@ const createWhiteabord = async (req, res) => {
     emptyFields.push("edges");
   }
   if (emptyFields.length > 0) {
-    console.log("this works");
     return res
       .status(400)
       .json({ error: "Please fill in all fields", emptyFields });
@@ -51,7 +50,8 @@ const createWhiteabord = async (req, res) => {
 
   // add doc to db
   try {
-    const whiteboard = await Whiteboard.create({ title, nodes, edges });
+    const user_id = req.user._id;
+    const whiteboard = await Whiteboard.create({ title, nodes, edges, user_id });
     res.status(200).json(whiteboard);
   } catch (error) {
     res.status(400).json({ error: error.message });
