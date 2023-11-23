@@ -16,8 +16,12 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
-import { List } from "@mui/material";
+import { Container, List } from "@mui/material";
 import { useWhiteboardContext } from "../hooks/useWhiteboardContext";
+import { useNavigate } from "react-router-dom";
+import { useInteractiveWhiteboardContext } from "../hooks/useInteractiveWhiteboardContext";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useLogout } from "../hooks/useLogout";
 
 const drawerWidth = 240;
 
@@ -67,9 +71,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 function NavBar() {
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
+  const { logout } = useLogout();
   const [open, setOpen] = useState(false);
   const [openMyBoards, setOpenMyBoards] = useState(true);
   const { whiteboards, dispatch } = useWhiteboardContext();
+  const { interactiveWhiteboard, dispatch: interactiveWhiteboardDispatch } =
+    useInteractiveWhiteboardContext();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -79,8 +88,32 @@ function NavBar() {
     setOpen(false);
   };
 
-  const handleClick = () => {
+  const handleMenuClick = () => {
     setOpenMyBoards(!openMyBoards);
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+  };
+
+  const handleSignUpClick = () => {
+    navigate("/signup");
+  };
+
+  const handleWhiteboardClick = (event, whiteboard) => {
+    //console.log("here");
+
+    const setInteractiveWhiteBoard = (whiteboard) => {
+      console.log(
+        "running interactive whiteboard: " + JSON.stringify(whiteboard)
+      );
+      interactiveWhiteboardDispatch({
+        type: "SET_INTERACTIVE_WHITEBOARD",
+        payload: whiteboard,
+      });
+    };
+
+    setInteractiveWhiteBoard(whiteboard);
   };
 
   useEffect(() => {
@@ -89,6 +122,8 @@ function NavBar() {
       const json = await response.json();
 
       if (response.ok) {
+        console.log("ran");
+        console.log("json: " + JSON.stringify(json));
         dispatch({ type: "SET_WHITEBOARD", payload: json });
       }
     };
@@ -97,72 +132,98 @@ function NavBar() {
   }, [dispatch]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onMouseOver={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: "none" }) }}
+    <div>
+      <AppBar position="static" open={open}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onMouseOver={handleDrawerOpen}
+              edge="start"
+              sx={{ mr: 2, ...(open && { display: "none" }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box sx={{ flexGrow: 1, textAlign: "center" }}>
+              <Typography variant="h4" noWrap component="div">
+                Creo
+              </Typography>
+            </Box>
+            {user && (
+              <Box sx={{ flexGrow: 0 }}>
+                <span>{user.email}</span>
+                <button onClick={handleLogoutClick}>Log out</button>
+              </Box>
+            )}
+            {user == null && (
+              <Box sx={{ flexGrow: 0 }}>
+                <button onClick={handleSignUpClick}>Sign-Up</button>
+              </Box>
+            )}
+          </Toolbar>
+          <Drawer
+            sx={{
+              width: drawerWidth,
+              flexShrink: 0,
+              "& .MuiDrawer-paper": {
+                width: drawerWidth,
+                boxSizing: "border-box",
+              },
+            }}
+            variant="persistent"
+            anchor="left"
+            open={open}
+            onMouseLeave={handleDrawerClose}
           >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h4" noWrap component="div">
-            Creo
-          </Typography>
-        </Toolbar>
+            <DrawerHeader>{"Menu"}</DrawerHeader>
+            <Divider />
+            {user && (
+              <List>
+                <ListItem>
+                  <ListItemButton onClick={handleMenuClick}>
+                    <ListItemText primary="My Boards" />
+                    {openMyBoards ? <ExpandLess /> : <ExpandMore />}
+                  </ListItemButton>
+                </ListItem>
+                <Collapse in={openMyBoards} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {whiteboards != null &&
+                      whiteboards.map((whiteboard) => (
+                        <ListItem key={whiteboard._id}>
+                          <ListItemButton
+                            key={whiteboard._id}
+                            onClick={(event) =>
+                              handleWhiteboardClick(event, whiteboard)
+                            }
+                          >
+                            <ListItemText primary={whiteboard.title} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    <Divider />
+                    <ListItem>
+                      <ListItemButton>
+                        <ListItemText primary="Shared Boards" />
+                        <ListItemIcon></ListItemIcon>
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+                </Collapse>
+                <Divider />
+              </List>
+            )}
+            {!user && "Login to see your boards!"}
+          </Drawer>
+
+          {/* <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <Typography variant="h4" noWrap component="div">
+              Creo
+            </Typography>
+          </Box> */}
+        </Container>
       </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        onMouseLeave={handleDrawerClose}
-      >
-        <DrawerHeader></DrawerHeader>
-        <Divider />
-        <List>
-          <ListItem>
-            <ListItemButton onClick={handleClick}>
-              <ListItemText primary="My Boards" />
-              {openMyBoards ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-          </ListItem>
-          <Collapse in={openMyBoards} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemIcon></ListItemIcon>
-                {whiteboards != null &&
-                  whiteboards.map((whiteboard) => (
-                    <ListItemText
-                      key={whiteboard._id}
-                      primary={whiteboard.title}
-                    />
-                  ))}
-              </ListItemButton>
-              <Divider />
-              <ListItem>
-                <ListItemButton>
-                  <ListItemText primary="Shared Boards" />
-                  <ListItemIcon></ListItemIcon>
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Collapse>
-          <Divider />
-        </List>
-      </Drawer>
-    </Box>
+    </div>
   );
 }
 

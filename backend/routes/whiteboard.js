@@ -8,19 +8,19 @@ const {
 } = require("../controllers/whiteboardController");
 const router = express.Router();
 
-// GET all workouts
+// GET all whiteboards
 router.get("/", getWhiteboards);
 
-// GET a single workout
+// GET a single whiteboard
 router.get("/:id", getWhiteboard);
 
-//POST a new workout
+//POST a new whiteboard
 router.post("/", createWhiteabord);
 
-//Delete a workout
+//Delete a whiteboard
 router.delete("/:id", deleteWhiteboard);
 
-// UPDATE a workout
+// UPDATE a whiteboard
 router.patch("/:id", updateWhiteboard);
 
 module.exports = router;

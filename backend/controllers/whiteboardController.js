@@ -5,11 +5,10 @@ const mongoose = require("mongoose");
 const getWhiteboards = async (req, res) => {
   // can put a property to limit searchers
   const whiteboards = await Whiteboard.find({}).sort({ createdAt: -1 });
-  console.log("work?");
   res.status(200).json(whiteboards);
 };
-// get a single whiteboard
 
+// get a single whiteboard
 const getWhiteboard = async (req, res) => {
   const { id } = req.params;
 
@@ -43,7 +42,6 @@ const createWhiteabord = async (req, res) => {
     emptyFields.push("edges");
   }
   if (emptyFields.length > 0) {
-    console.log("this works");
     return res
       .status(400)
       .json({ error: "Please fill in all fields", emptyFields });
@@ -51,7 +49,8 @@ const createWhiteabord = async (req, res) => {
 
   // add doc to db
   try {
-    const whiteboard = await Whiteboard.create({ title, nodes, edges });
+    const user_id = req.user._id;
+    const whiteboard = await Whiteboard.create({ title, nodes, edges, user_id });
     res.status(200).json(whiteboard);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -59,7 +58,6 @@ const createWhiteabord = async (req, res) => {
 };
 
 // delete a whiteboard
-
 const deleteWhiteboard = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -79,6 +77,7 @@ const deleteWhiteboard = async (req, res) => {
 
 const updateWhiteboard = async (req, res) => {
   const { id } = req.params;
+  console.log('ran this shit');
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such whiteboard" });
   }
