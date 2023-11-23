@@ -7,7 +7,7 @@ const WhiteboardPage = () => {
   const { whiteboards, dispatch } = useWhiteboardContext();
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
+    const fetchWhiteboards = async () => {
       const response = await fetch("/api/whiteboards");
       const json = await response.json();
 
@@ -16,7 +16,7 @@ const WhiteboardPage = () => {
       }
     };
 
-    fetchWorkouts();
+    fetchWhiteboards();
   }, [dispatch]);
 
   return (

@@ -18,6 +18,8 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import { Container, List } from "@mui/material";
 import { useWhiteboardContext } from "../hooks/useWhiteboardContext";
+import { useNavigate } from "react-router-dom";
+import { useInteractiveWhiteboardContext } from "../hooks/useInteractiveWhiteboardContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useLogout } from "../hooks/useLogout";
 
@@ -69,11 +71,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 function NavBar() {
+  const navigate = useNavigate();
   const { user } = useAuthContext();
   const { logout } = useLogout();
   const [open, setOpen] = useState(false);
   const [openMyBoards, setOpenMyBoards] = useState(true);
   const { whiteboards, dispatch } = useWhiteboardContext();
+  const { interactiveWhiteboard, dispatch: interactiveWhiteboardDispatch } =
+    useInteractiveWhiteboardContext();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -91,12 +96,34 @@ function NavBar() {
     logout();
   };
 
+  const handleSignUpClick = () => {
+    navigate("/signup");
+  };
+
+  const handleWhiteboardClick = (event, whiteboard) => {
+    //console.log("here");
+
+    const setInteractiveWhiteBoard = (whiteboard) => {
+      console.log(
+        "running interactive whiteboard: " + JSON.stringify(whiteboard)
+      );
+      interactiveWhiteboardDispatch({
+        type: "SET_INTERACTIVE_WHITEBOARD",
+        payload: whiteboard,
+      });
+    };
+
+    setInteractiveWhiteBoard(whiteboard);
+  };
+
   useEffect(() => {
     const fetchWhiteboards = async () => {
       const response = await fetch("/api/whiteboards");
       const json = await response.json();
 
       if (response.ok) {
+        console.log("ran");
+        console.log("json: " + JSON.stringify(json));
         dispatch({ type: "SET_WHITEBOARD", payload: json });
       }
     };
@@ -129,6 +156,11 @@ function NavBar() {
                 <button onClick={handleLogoutClick}>Log out</button>
               </Box>
             )}
+            {user == null && (
+              <Box sx={{ flexGrow: 0 }}>
+                <button onClick={handleSignUpClick}>Sign-Up</button>
+              </Box>
+            )}
           </Toolbar>
           <Drawer
             sx={{
@@ -156,16 +188,19 @@ function NavBar() {
                 </ListItem>
                 <Collapse in={openMyBoards} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
-                    <ListItemButton sx={{ pl: 4 }}>
-                      <ListItemIcon></ListItemIcon>
-                      {whiteboards != null &&
-                        whiteboards.map((whiteboard) => (
-                          <ListItemText
+                    {whiteboards != null &&
+                      whiteboards.map((whiteboard) => (
+                        <ListItem key={whiteboard._id}>
+                          <ListItemButton
                             key={whiteboard._id}
-                            primary={whiteboard.title}
-                          />
-                        ))}
-                    </ListItemButton>
+                            onClick={(event) =>
+                              handleWhiteboardClick(event, whiteboard)
+                            }
+                          >
+                            <ListItemText primary={whiteboard.title} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
                     <Divider />
                     <ListItem>
                       <ListItemButton>

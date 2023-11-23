@@ -19,14 +19,11 @@ export const useLogin = () => {
     const json = await response.json();
 
     if (!response.ok) {
-      console.log("broke");
       setIsLoading(false);
       setError(json.error);
     }
 
     if (response.ok) {
-      console.log("work");
-
       localStorage.setItem("user", JSON.stringify(json));
       dispatch({ type: "LOGIN", payload: json });
       setIsLoading(false);

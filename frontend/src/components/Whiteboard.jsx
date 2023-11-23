@@ -27,6 +27,8 @@ import TriangleNode from "../components/CustomNodes/TriangleNode";
 import TextInput from "../components/CustomNodes/UserInputNodes/TextInput";
 import "../components/CustomNodes/CustomNodes.css";
 import io from "socket.io-client";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useInteractiveWhiteboardContext } from "../hooks/useInteractiveWhiteboardContext";
 
 const nodeTypes = {
   textNode: TextNode,
@@ -63,6 +65,9 @@ function Whiteboard() {
   const [nodeSpawnMode, setNodeSpawnMode] = useState(false);
   const [isHandleSource, setHandleSource] = useState(false);
   const [savedNodeAndEdges, setSavedNodeAndEdges] = useState(null);
+  const { interactiveWhiteboard, dispatch: interactiveWhiteboardDispatch } =
+    useInteractiveWhiteboardContext();
+  const { user } = useAuthContext();
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -80,7 +85,13 @@ function Whiteboard() {
       };
       setNodeSpawnMode(true);
       setActiveNode(newNode.id);
-      setNodes((nds) => nds.concat(newNode));
+
+      // temp solution
+      if (nodes) {
+        setNodes((nds) => nds.concat(newNode));
+      } else {
+        setNodes([newNode]);
+      }
     }
   };
 
@@ -114,10 +125,17 @@ function Whiteboard() {
   );
 
   useEffect(() => {
-      let title = "Untitled";
-      let nodesAndEdges = { Title: title, nodes: nodes, edges: edges };
-      socketRef?.current?.emit("whiteboard-updated", nodesAndEdges);
+    let data = { title: "title", nodes: nodes, edges: edges, user: user };
+    socketRef?.current?.emit("whiteboard-updated", data);
   }, [nodes, edges]);
+
+  useEffect(() => {
+    console.log(
+      "interactiveWhiteboard: " + JSON.stringify(interactiveWhiteboard)
+    );
+    setNodes(interactiveWhiteboard?.nodes);
+    setEdges(interactiveWhiteboard?.edges);
+  }, [interactiveWhiteboard]);
 
   const onConnectStart = useCallback((e, { nodeId, handleId, handleType }) => {
     connectingNodeId.current = nodeId;
@@ -153,10 +171,25 @@ function Whiteboard() {
         data: { label: `Node ${id}` },
       };
 
-      setNodes((nds) => nds.concat(newNode));
-      setEdges((eds) =>
-        eds.concat({ id, source: connectingNodeId.current, target: id })
-      );
+      // temp solutions
+      if (nodes) {
+        setNodes((nds) => nds.concat(newNode));
+      } else {
+        setNodes([newNode]);
+      }
+
+      if (edges) {
+        setEdges((eds) =>
+          eds.concat({ id, source: connectingNodeId.current, target: id })
+        );
+      } else {
+        setEdges([{ id, source: connectingNodeId.current, target: id }]);
+      }
+
+      // setNodes((nds) => nds.concat(newNode));
+      // setEdges((eds) =>
+      //   eds.concat({ id, source: connectingNodeId.current, target: id })
+      // );
     }
     setHandleSource(false);
   });

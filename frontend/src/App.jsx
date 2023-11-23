@@ -5,13 +5,9 @@ import sentencesData from "./friends.json";
 import "reactflow/dist/style.css";
 import "./main.css";
 
-import { AppBar, IconButton } from "@mui/material";
-import { WhiteboardContextProvider } from "./context/WhiteboardContext.jsx";
-import { AuthContextProvider } from "./context/AuthContext";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthContext } from "./hooks/useAuthContext";
-import io from "socket.io-client";
-
+import { InteractiveWhiteboardContextProvider } from "./context/InteractiveWhiteboardContext";
 import Whiteboard from "./components/Whiteboard";
 
 import NavBar from "./components/NavBar";
@@ -45,23 +41,25 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <NavBar />
-        <div className="body-container">
-          <Routes>
-            <Route
-              path="/"
-              element={user ? <Whiteboard /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/login"
-              element={!user ? <Login /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/signup"
-              element={!user ? <Signup /> : <Navigate to="/" />}
-            />
-          </Routes>
-        </div>
+        <InteractiveWhiteboardContextProvider>
+          <NavBar />
+          <div className="body-container">
+            <Routes>
+              <Route
+                path="/"
+                element={user ? <Whiteboard /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/login"
+                element={!user ? <Login /> : <Navigate to="/" />}
+              />
+              <Route
+                path="/signup"
+                element={!user ? <Signup /> : <Navigate to="/" />}
+              />
+            </Routes>
+          </div>
+        </InteractiveWhiteboardContextProvider>
         {/* <Footer /> */}
       </BrowserRouter>
     </>
