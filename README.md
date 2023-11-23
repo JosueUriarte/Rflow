@@ -1,7 +1,7 @@
 # R-Wireframe
 A wireframe project made with MongoDB, React, Node.js, and Express.
 
-To # Run Frontend
+# Run Frontend
 At frontend directory
 
     npm run dev
